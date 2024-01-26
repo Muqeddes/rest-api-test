@@ -17,20 +17,20 @@ public class ApiTest {
     public void createUser() {
         RestAssured.baseURI = appConfig.readFromConfig("baseUrl");
         Response response = RestAssured.given().headers(appConfig.readFromConfig("key"), appConfig.readFromConfig("value"), "Content-Type", "application/json").and().body(payloadUtilities.getUserPayload()).when().post("/user").then().extract().response();
-
+        System.out.println(response.getBody().prettyPrint());
         Assert.assertEquals(response.getStatusCode(), 200);
 
     }
 
-    @Test(description = "Get: View user info")
+    @Test(description = "Get: View user info", dependsOnMethods = {"createUser"})
     public void getUser() {
         RestAssured.baseURI = appConfig.readFromConfig("baseUrl");
         Response response = RestAssured.given().header(appConfig.readFromConfig("key"), appConfig.readFromConfig("value")).when().get("/user/" + appConfig.readFromConfig("username")).then().extract().response();
-
+        System.out.println(response.getBody().prettyPrint());
         Assert.assertEquals(response.getStatusCode(), 200);
     }
 
-    @Test(description = "Put: Update user info")
+    @Test(description = "Put: Update user info", dependsOnMethods = {"getUser"})
     public void updateUser() {
 
         String updatedInfo = "{\"id\": 1025,\r\n"
@@ -49,7 +49,7 @@ public class ApiTest {
         Assert.assertEquals(response.getStatusCode(), 200);
     }
 
-    @Test(description = "Delete: Delete created user")
+    @Test(description = "Delete: Delete created user", dependsOnMethods = {"updateUser"})
     public void deleteUser() {
         RestAssured.baseURI = appConfig.readFromConfig("baseUrl");
         Response response = RestAssured.given().header(appConfig.readFromConfig("key"), appConfig.readFromConfig("value")).when().delete("/user/" + appConfig.readFromConfig("username")).then().extract().response();
